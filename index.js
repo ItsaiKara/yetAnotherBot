@@ -12,7 +12,6 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 client.commands = new Discord.Collection();
 
-
 /****************************************************************
 	The part where modules (commands are loaded)
 *****************************************************************/
