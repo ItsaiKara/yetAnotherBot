@@ -1,0 +1,31 @@
+{
+  "name": "yetanotherbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ItsaiKara/yetAnotherBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ItsaiKara/yetAnotherBot/issues"
+  },
+  "homepage": "https://github.com/ItsaiKara/yetAnotherBot#readme",
+  "dependencies": {
+    "@discordjs/builders": "^0.13.0",
+    "@discordjs/rest": "^0.4.1",
+    "axios": "^0.27.2",
+    "discord": "^0.8.2",
+    "discord-api-types": "^0.33.0",
+    "discord.js": "^13.7.0",
+    "dotenv": "^16.0.1",
+    "node-cron": "^3.0.0",
+    "regex": "^0.1.1",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
