@@ -4,12 +4,16 @@ const { Client, Intents } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { clientId, guildId, token } = require('./config.json');
+const { clientId, guildId, token, secondBot } = require('./config.json');
+var cron = require('node-cron');
 const fs = require('fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [
+				Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES,
+				Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MEMBERS, 
+				Intents.FLAGS.GUILD_PRESENCES ], partials: ['MESSAGE','CHANNEL'] });
 client.commands = new Discord.Collection();
 
 /****************************************************************
@@ -44,11 +48,15 @@ const rest = new REST({ version: '9' }).setToken(token);
 	}
 })();
 
+var mainGuild 
 // When the client is ready, run this code (only once)
-client.once('ready', () => {
+client.once('ready', async () => {
 	console.log('[INFO] Client ready');
+	const guildGetter = client.guilds.fetch('198415825609162752').then((guild)=>{
+		return guild
+	})
+	mainGuild = await guildGetter
 });
-
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 
@@ -64,5 +72,30 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
+
+/*----------------------------------------------------------------------------
+	Parity bot checker
+------------------------------------------------------------------------------*/
+var pingTimer = 99
+var marcoTime = cron.schedule('*/5 * * * * *', () => {
+	const tmp = mainGuild.members.fetch(secondBot).then((member)=>{
+			if (member.presence != null) {
+				//console.log(member.presence.status + " " + pingTimer)		
+				if(member.presence.status == "offline"){
+					if (pingTimer >= 100) {
+						pingTimer = 0
+						client.users.fetch("196957537537490946").then((user)=> {
+							user.send("The second bot needs a reboot !")
+						});
+					} else {
+						pingTimer = pingTimer + 1
+					}
+				} else {
+					pingTimer = 99
+				}
+			} else { console.log("[WARN] Second bot not booted")}
+	})
+});
+marcoTime.start();
 
 client.login(token);
