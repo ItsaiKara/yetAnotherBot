@@ -18,6 +18,7 @@ client.commands = new Discord.Collection();
 
 /****************************************************************
 	The part where modules (commands are loaded)
+		Loads all the commands from the commands folder
 *****************************************************************/
 console.log('__________________________________________________');
 console.log('============= [INFO] Loading modules =============');
@@ -32,6 +33,7 @@ for (const file of commandFiles) {
 		commands.push(command.data.toJSON());
 	}
 }
+// Registering all the commands from the modules exported earlier
 console.log('__________________________________________________');
 console.log('========== [INFO] Registering commands ===========');
 const rest = new REST({ version: '9' }).setToken(token);
@@ -52,6 +54,7 @@ var mainGuild
 // When the client is ready, run this code (only once)
 client.once('ready', async () => {
 	console.log('[INFO] Client ready');
+	//Function fetching the main guild id 
 	const guildGetter = client.guilds.fetch('198415825609162752').then((guild)=>{
 		return guild
 	})
