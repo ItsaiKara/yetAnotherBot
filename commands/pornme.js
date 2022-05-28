@@ -31,12 +31,13 @@ module.exports = {
 		var artist = interaction.options.get('artist')
 		var maxPage = 1 
 		if (artist != null) {
-			switch (maxPage) {
+			console.log("test")
+			switch (artist.value) {
 			case 'kairunoburogu':
 				maxPage = 2
 				break;
 			case 'squeezable':
-				maxPage = 7
+				maxPage = 3
 				break;
 			case 'dross':
 				maxPage = 8
@@ -64,10 +65,11 @@ module.exports = {
 	
 		}
 		var randPage = Math.floor(Math.random() * maxPage)
+		var randPage = 0
 		//console.log(artist)
-		console.log(`https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=${artist}&limit=100&pid=${randPage}`)
+		console.log(`https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=${artist}&limit=1000&pid=${randPage}`)
 		axios
-			.get(`https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=${artist}&limit=100&pid=${randPage}`)
+			.get(`https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=${artist}&limit=1000&pid=${randPage}`)
 			.then(res => {
 				//console.log("ok")
 				//console.log(`statusCode: ${res.status}`);
