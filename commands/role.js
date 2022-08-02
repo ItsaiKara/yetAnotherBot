@@ -18,7 +18,7 @@ module.exports = {
 		var role = null
 		switch (interaction.options.get('role').value){
 			case 'h':
-				await interaction.reply({content : 'Here is the documentation'})
+				await interaction.reply({content : 'To get a role you need to use the integrated command ("using /role") use the autocompletion to select the right role (select the role with tab)'})
 				/// TODO
 				break
 			case 'p18':
