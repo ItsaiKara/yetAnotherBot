@@ -60,7 +60,21 @@ client.once('ready', async () => {
 	})
 	mainGuild = await guildGetter
 });
+
+
+client.on('messageCreate', async message => {
+	if (!message.author.bot ){
+		const re = RegExp('\\bquoi\\b|\\bpourquoi\\b', 'g');
+		let resultReg = re.test(message.content.toLowerCase())
+		if (resultReg === true){
+			console.log(`[FUN] ${message.author.username}#${message.author.discriminator} got feured`)
+			message.channel.send('https://video.twimg.com/ext_tw_video/1554779927244951552/pu/vid/640x332/AWGCJnyb5NgB2XU1.mp4?tag=12')
+		}
+	}
+});
+
 client.on('interactionCreate', async interaction => {
+
 	if (!interaction.isCommand()) return;
 
 	const command = client.commands.get(interaction.commandName);
