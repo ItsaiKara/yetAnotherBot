@@ -6,7 +6,7 @@ module.exports = {
         .setDescription('Creates a big whitespace in the chat')
         .addIntegerOption(option=>
             option.setName('rows')
-                .setDescription('The number of rows you want to print (default 50')
+                .setDescription('The number of rows you want to print (default 50 rows)')
                 .setRequired(false)),
     status : "+",
     async execute(interaction) {
