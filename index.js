@@ -2,6 +2,7 @@
 const Discord = require('discord.js');
 const { Client, Intents } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId, token, secondBot } = require('./config.json');
@@ -59,7 +60,7 @@ const rest = new REST({ version: '9' }).setToken(token);
  var jsonUserActivity = require('./userData.json');
  var userVocList = []
  var userVocListOld = []
-
+console.log("[INFO] UserRegistered: ")
 console.log(jsonUserActivity)
 
 var mainGuild 
@@ -182,8 +183,6 @@ var userVocTime = cron.schedule('*/30 * * * * *', () => {
 	increaseVocActivity()
 });
 userVocTime.start()
-
-
 
 /*----------------------------------------------------------------------------
 	Parity bot checker (Needs to be replaced when heroku stop being silly)
