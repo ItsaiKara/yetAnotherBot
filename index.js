@@ -13,7 +13,9 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 const client = new Client({ intents: [
 				Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES,
 				Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MEMBERS, 
-				Intents.FLAGS.GUILD_PRESENCES ], partials: ['MESSAGE','CHANNEL'] });
+				Intents.FLAGS.GUILD_VOICE_STATES,
+				Intents.FLAGS.GUILD_PRESENCES ], partials: ['MESSAGE','CHANNEL'],
+				 });
 client.commands = new Discord.Collection();
 
 /****************************************************************
@@ -50,6 +52,16 @@ const rest = new REST({ version: '9' }).setToken(token);
 	}
 })();
 
+/******************************************************************
+ * 			The part where we load the user activity
+ * 
+ ******************************************************************/
+ var jsonUserActivity = require('./userData.json');
+ var userVocList = []
+ var userVocListOld = []
+
+console.log(jsonUserActivity)
+
 var mainGuild 
 // When the client is ready, run this code (only once)
 client.once('ready', async () => {
@@ -61,16 +73,81 @@ client.once('ready', async () => {
 	mainGuild = await guildGetter
 });
 
-
-client.on('messageCreate', async message => {
-	if (!message.author.bot ){
-		const re = RegExp('\\bquoi\\b|\\bpourquoi\\b', 'g');
-		let resultReg = re.test(message.content.toLowerCase())
-		if (resultReg === true){
-			console.log(`[FUN] ${message.author.username}#${message.author.discriminator} got feured`)
-			message.channel.send('https://video.twimg.com/ext_tw_video/1554779927244951552/pu/vid/640x332/AWGCJnyb5NgB2XU1.mp4?tag=12')
+function increaseTextActivity(message, type){
+	//Increase Value of a key in the userActivity object
+	// Type = msg / feur 
+	if (jsonUserActivity[message.author.id] == undefined){
+		console.log(`[INFO] New entry in userJson (${message.author.username}#${message.author.discriminator} aka ${message.author.id})`)
+		jsonUserActivity[message.author.id] = {"msg" : 0, "feur": 0, "voc": 0}
+		jsonUserActivity[message.author.id][type]++
+		//console.log(jsonUserActivity[message.author.id])
+	} else {
+		jsonUserActivity[message.author.id][type]++
+		//console.log(jsonUserActivity[message.author.id])
+	}
+}
+function increaseVocActivity(){
+	for(var el = 0; el < userVocList.length; el++){
+		//console.log(userVocList[el])
+		id = userVocList[el]
+		//console.log(jsonUserActivity[id])
+		if(jsonUserActivity[id] === undefined){
+			jsonUserActivity[id] = {"msg" : 0, "feur": 0, "voc": 0}
+			jsonUserActivity[id]["voc"] ++
+			//console.log("0"+jsonUserActivity[id])
+		} else {
+			jsonUserActivity[id]["voc"] ++
+			//console.log("1"+jsonUserActivity[id])
 		}
 	}
+	
+}
+
+function updateVocUserList(){
+	userVocListOld = [...userVocList]
+	userVocList.length = 0
+	//Getting the list of users in vc
+	//keyListCache = mainGuild.voiceStates.cache
+	cache = mainGuild.voiceStates.cache
+	cache.forEach((vs, id) => {
+		if (vs.channelId == null){
+			//console.log("At least one user left")
+		} else {
+			//console.log(`pushed ${id}`)
+			userVocList.push(id)
+		}
+	});
+	//console.log("--------------------------------------------------------------------------------------------------------------------------------------------")
+}
+
+function saveDataToJson(){
+	var jsonStr = JSON.stringify(jsonUserActivity);
+	fs.writeFile('userData.json', jsonStr, (err) => {
+		if (err) {
+			//throw err;
+		}
+		console.log("[INFO] JSON user data is saved.");
+	});
+}
+
+// Executed each msg sent
+client.on('messageCreate', async message => {
+	if (message.content == "showme"){
+		console.log(jsonUserActivity)
+	}
+	if (!message.author.bot ){
+		//checking if message is feur
+		const re = RegExp('\\bquoi\\b|\\bpourquoi\\b', 'g');
+		let resultReg = re.test(message.content.toLowerCase())
+		if (resultReg === true){ //Check if message should be added as feur or regular
+			console.log(`[FUN] ${message.author.username}#${message.author.discriminator} got feured`)
+			message.channel.send('https://video.twimg.com/ext_tw_video/1554779927244951552/pu/vid/640x332/AWGCJnyb5NgB2XU1.mp4?tag=12')
+			increaseTextActivity(message, "feur")
+		} else {
+			increaseTextActivity(message, "msg")			
+		}
+	}
+	//console.log(userVocList)
 });
 
 client.on('interactionCreate', async interaction => {
@@ -85,13 +162,32 @@ client.on('interactionCreate', async interaction => {
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		//await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
 });
 
+/*----------------------------------------------------------------------------
+	Check vocal activity of users
+
+----------------------------------------------------------------------------*/
+var vocTimeCt = 0
+var userVocTime = cron.schedule('*/30 * * * * *', () => {
+	if (vocTimeCt >= 2){
+		console.log(`[INFO] UserListSize: ${userVocList.length}, UserListOldSize: ${userVocListOld.length}`)
+		vocTimeCt = 0
+		saveDataToJson()
+	}
+	vocTimeCt++
+	updateVocUserList()
+	increaseVocActivity()
+});
+userVocTime.start()
+
+
 
 /*----------------------------------------------------------------------------
-	Parity bot checker
+	Parity bot checker (Needs to be replaced when heroku stop being silly)
+	Sends message at regular interval to other bot to check if one is down
 ------------------------------------------------------------------------------*/
 var pingTimer = 99
 var marcoTime = cron.schedule('*/5 * * * * *', () => {
