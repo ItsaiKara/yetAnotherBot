@@ -138,11 +138,27 @@ client.on('messageCreate', async message => {
 	}
 	if (!message.author.bot ){
 		//checking if message is feur
-		const re = RegExp('\\bquoi\\b|\\bpourquoi\\b', 'g');
-		let resultReg = re.test(message.content.toLowerCase())
+		//const re = RegExp('\\bquoi\\b|\\bpourquoi\\b', 'g');
+		const re = RegExp('(pk\\b)|((pour)?quoi\\b)|koi\\b', 'g');
+		let randint = Math.floor(Math.random() * (3 - 0) + 0);
+		if (randint == 1){
+			var resultReg = re.test(message.content.toLowerCase())
+		}
 		if (resultReg === true){ //Check if message should be added as feur or regular
 			console.log(`[FUN] ${message.author.username}#${message.author.discriminator} got feured`)
-			message.channel.send('https://video.twimg.com/ext_tw_video/1554779927244951552/pu/vid/640x332/AWGCJnyb5NgB2XU1.mp4?tag=12')
+			message.channel.send('**FEUR !**')
+			let randint = Math.floor(Math.random() * (3 - 0) + 0);
+			switch(randint){
+				case 0:
+					message.channel.send('https://video.twimg.com/ext_tw_video/1554779927244951552/pu/vid/640x332/AWGCJnyb5NgB2XU1.mp4?tag=12')
+				break;
+				case 1:
+					message.channel.send('https://tenor.com/view/feur-meme-gif-24407942')
+				break;
+				default: 
+					message.channel.send('https://tenor.com/view/feur-heart-locket-vred-quoi-quoi-feur-gif-22321210')
+				break;
+			}
 			increaseTextActivity(message, "feur")
 		} else {
 			increaseTextActivity(message, "msg")			
@@ -183,31 +199,5 @@ var userVocTime = cron.schedule('*/30 * * * * *', () => {
 	increaseVocActivity()
 });
 userVocTime.start()
-
-/*----------------------------------------------------------------------------
-	Parity bot checker (Needs to be replaced when heroku stop being silly)
-	Sends message at regular interval to other bot to check if one is down
-------------------------------------------------------------------------------*/
-var pingTimer = 99
-var marcoTime = cron.schedule('*/5 * * * * *', () => {
-	const tmp = mainGuild.members.fetch(secondBot).then((member)=>{
-			if (member.presence != null) {
-				//console.log(member.presence.status + " " + pingTimer)		
-				if(member.presence.status == "offline"){
-					if (pingTimer >= 100) {
-						pingTimer = 0
-						client.users.fetch("196957537537490946").then((user)=> {
-							user.send("The second bot needs a reboot !")
-						});
-					} else {
-						pingTimer = pingTimer + 1
-					}
-				} else {
-					pingTimer = 99
-				}
-			} else { console.log("[WARN] Second bot not booted")}
-	})
-});
-marcoTime.start();
 
 client.login(token);
