@@ -138,7 +138,6 @@ client.on('messageCreate', async message => {
 	}
 	if (!message.author.bot ){
 		//checking if message is feur
-		//const re = RegExp('\\bquoi\\b|\\bpourquoi\\b', 'g');
 		const re = RegExp('(pk\\b)|((pour)?quoi\\b)|koi\\b', 'g');
 		let randint = Math.floor(Math.random() * (3 - 0) + 0);
 		if (randint == 1){
