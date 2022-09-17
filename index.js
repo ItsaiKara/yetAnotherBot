@@ -5,7 +5,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { clientId, guildId, token, secondBot } = require('./config.json');
+const { clientId, guildId, token, mode } = require('./config.json');
 var cron = require('node-cron');
 const fs = require('fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -52,7 +52,6 @@ const rest = new REST({ version: '9' }).setToken(token);
 		console.error('[ERROR] '+error);
 	}
 })();
-
 /******************************************************************
  * 			The part where we load the user activity
  * 
@@ -72,7 +71,17 @@ client.once('ready', async () => {
 		return guild
 	})
 	mainGuild = await guildGetter
+
+	//Define bot activity
+	if(mode == 0){
+		acti = { activities: [{ name: `Listening to orders in "${mainGuild.name}"` }], status: 'online' }
+	} else {
+		acti = { activities: [{ name: `Under maintenance` }], status: 'dnd' }
+	}
+	client.user.setPresence(acti);
 });
+
+
 
 function increaseTextActivity(message, type){
 	//Increase Value of a key in the userActivity object
