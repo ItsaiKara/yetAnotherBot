@@ -2,5 +2,12 @@
 	"token": "NDY4ODMwMDI1Njc2ODgxOTUx.GE5cbG.byEOQjLxb4HsWFKdgrexpcXNqHrAGxKXeN2Wtk",
 	"guildId":"198415825609162752",
 	"clientId":"468830025676881951",
-	"mode": 0
+	"mode": 0,
+	"minecraft": {
+		"status": "soon",
+		"ip": "",
+		"desc" : "Je vais surement ouvrir un server pendant le mois d'octobre -Tyfn",
+		"date" : ""
+
+	}
 }
