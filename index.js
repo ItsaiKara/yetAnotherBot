@@ -74,7 +74,7 @@ client.once('ready', async () => {
 
 	//Define bot activity
 	if(mode == 0){
-		acti = { activities: [{ name: `Listening to orders in "${mainGuild.name}"` }], status: 'online' }
+		acti = { activities: [{ name: `Listening commands in "${mainGuild.name}"` }], status: 'online' }
 	} else {
 		acti = { activities: [{ name: `Under maintenance` }], status: 'dnd' }
 	}
